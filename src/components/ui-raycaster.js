@@ -13,12 +13,12 @@
  */
 AFRAME.registerComponent('ui-raycaster', {
   schema: {
-    far: {default: Infinity}, // Infinity.
-    interval: {default: 100},
-    near: {default: 0},
-    objects: {default: ''},
-    recursive: {default: true},
-    rotation: {default: 0}
+    far: { default: Infinity }, // Infinity.
+    interval: { default: 100 },
+    near: { default: 0 },
+    objects: { default: '' },
+    recursive: { default: true },
+    rotation: { default: 0 }
   },
 
   init: function () {
@@ -45,8 +45,8 @@ AFRAME.registerComponent('ui-raycaster', {
    * Create or update raycaster object.
    */
   update: function () {
-    var data = this.data;
-    var raycaster = this.raycaster;
+    const data = this.data;
+    const raycaster = this.raycaster;
 
     // Set raycaster properties.
     raycaster.far = data.far;
@@ -59,15 +59,13 @@ AFRAME.registerComponent('ui-raycaster', {
    * Update list of objects to test for intersection.
    */
   refreshObjects: function () {
-    var data = this.data;
-    var i;
-    var objectEls;
+    const data = this.data;
 
     // Push meshes onto list of objects to intersect.
     if (data.objects) {
-      objectEls = this.el.sceneEl.querySelectorAll(data.objects);
+      const objectEls = this.el.sceneEl.querySelectorAll(data.objects);
       this.objects = [];
-      for (i = 0; i < objectEls.length; i++) {
+      for (let i = 0; i < objectEls.length; i++) {
         this.objects.push(objectEls[i].object3D);
       }
       return;
@@ -81,18 +79,16 @@ AFRAME.registerComponent('ui-raycaster', {
    * Check for intersections and cleared intersections on an interval.
    */
   tick: function (time) {
-    var el = this.el;
-    var data = this.data;
-    var intersectedEls;
-    var intersections;
-    var prevCheckTime = this.prevCheckTime;
-    var prevIntersectedEls;
+    const el = this.el;
+    const data = this.data;
+    let intersections;
+    const prevCheckTime = this.prevCheckTime;
 
     // Only check for intersection if interval time has passed.
     if (prevCheckTime && (time - prevCheckTime < data.interval)) { return; }
 
     // Store old previously intersected entities.
-    prevIntersectedEls = this.intersectedEls.slice();
+    const prevIntersectedEls = this.intersectedEls.slice();
 
     // Raycast.
     this.updateOriginDirection();
@@ -104,14 +100,14 @@ AFRAME.registerComponent('ui-raycaster', {
     });
 
     // Update intersectedEls.
-    intersectedEls = this.intersectedEls = intersections.map(function getEl (intersection) {
+    const intersectedEls = this.intersectedEls = intersections.map(function getEl (intersection) {
       return intersection.object.el;
     });
 
     // Emit intersected on intersected entity per intersected entity.
     intersections.forEach(function emitEvents (intersection) {
-      var intersectedEl = intersection.object.el;
-      intersectedEl.emit('raycaster-intersected', {el: el, intersection: intersection});
+      const intersectedEl = intersection.object.el;
+      intersectedEl.emit('raycaster-intersected', { el: el, intersection: intersection });
     });
 
     // Emit all intersections at once on raycasting entity.
@@ -125,8 +121,8 @@ AFRAME.registerComponent('ui-raycaster', {
     // Emit intersection cleared on both entities per formerly intersected entity.
     prevIntersectedEls.forEach(function checkStillIntersected (intersectedEl) {
       if (intersectedEls.indexOf(intersectedEl) !== -1) { return; }
-      el.emit('raycaster-intersection-cleared', {el: intersectedEl});
-      intersectedEl.emit('raycaster-intersected-cleared', {el: el});
+      el.emit('raycaster-intersection-cleared', { el: intersectedEl });
+      intersectedEl.emit('raycaster-intersected-cleared', { el: el });
     });
   },
 
@@ -134,15 +130,15 @@ AFRAME.registerComponent('ui-raycaster', {
    * Set origin and direction of raycaster using entity position and rotation.
    */
   updateOriginDirection: (function () {
-    var directionHelper = new THREE.Quaternion();
-    var originVec3 = new THREE.Vector3();
-    var scaleDummy = new THREE.Vector3();
+    const directionHelper = new THREE.Quaternion();
+    const originVec3 = new THREE.Vector3();
+    const scaleDummy = new THREE.Vector3();
 
     // Closure to make quaternion/vector3 objects private.
     return function updateOriginDirection () {
-      var el = this.el;
-      var direction = this.direction;
-      var object3D = el.object3D;
+      const el = this.el;
+      const direction = this.direction;
+      const object3D = el.object3D;
 
       // Update matrix world.
       object3D.updateMatrixWorld();

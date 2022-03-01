@@ -14,9 +14,9 @@ AFRAME.registerBrush('cubes',
       this.drawing.object3D.add(this.object3D);
     },
     addPoint: function (position, orientation, pointerPosition, pressure, timestamp) {
-      var box = new THREE.Mesh(this.geometry, this.material);
+      const box = new THREE.Mesh(this.geometry, this.material);
 
-      var sca = pressure * this.data.size * Math.random();
+      const sca = pressure * this.data.size * Math.random();
       box.scale.set(sca, sca, sca);
       box.position.copy(pointerPosition);
       box.quaternion.copy(orientation);
@@ -29,5 +29,5 @@ AFRAME.registerBrush('cubes',
       this.drawing.object3D.children.pop();
     }
   },
-  {thumbnail: 'brushes/thumb_cubes.gif', spacing: 0.01}
+  { thumbnail: 'brushes/thumb_cubes.gif', spacing: 0.01 }
 );

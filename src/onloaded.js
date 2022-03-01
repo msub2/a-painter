@@ -5,12 +5,12 @@ module.exports = function (callback) {
     document.addEventListener('DOMContentLoaded', onDomLoaded);
   }
 
-  function onDomLoaded() {
-    var sceneEl = document.querySelector('a-scene');
+  function onDomLoaded () {
+    const sceneEl = document.querySelector('a-scene');
     if (sceneEl.hasLoaded) {
       callback();
     } else {
       sceneEl.addEventListener('loaded', callback());
     }
   }
-}
+};

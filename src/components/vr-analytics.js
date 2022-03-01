@@ -1,7 +1,9 @@
+/* globals AFRAME ga */
+
 AFRAME.registerComponent('vr-analytics', {
   init: function () {
-    var el = this.el;
-    var emitted = false;
+    const el = this.el;
+    let emitted = false;
 
     el.addEventListener('enter-vr', function () {
       if (emitted || !AFRAME.utils.device.checkHeadsetConnected() ||

@@ -1,18 +1,15 @@
 /* globals AFRAME THREE */
-var sharedBufferGeometryManager = require('../sharedbuffergeometrymanager.js');
-var onLoaded = require('../onloaded.js');
+const sharedBufferGeometryManager = require('../sharedbuffergeometrymanager.js');
+const onLoaded = require('../onloaded.js');
 
 (function () {
-
-  var geometryManager = null;
-
   onLoaded(function () {
-    var optionsBasic = {
+    const optionsBasic = {
       vertexColors: THREE.VertexColors,
       side: THREE.DoubleSide
     };
 
-    var optionsStandard = {
+    const optionsStandard = {
       roughness: 0.75,
       metalness: 0.25,
       vertexColors: THREE.VertexColors,
@@ -20,7 +17,7 @@ var onLoaded = require('../onloaded.js');
       side: THREE.DoubleSide
     };
 
-    var optionTextured = {
+    const optionTextured = {
       roughness: 0.75,
       metalness: 0.25,
       vertexColors: THREE.VertexColors,
@@ -35,8 +32,7 @@ var onLoaded = require('../onloaded.js');
     sharedBufferGeometryManager.addSharedBuffer('strip-textured', new THREE.MeshStandardMaterial(optionTextured));
   });
 
-  var line = {
-
+  const line = {
     init: function (color, brushSize) {
       this.sharedBuffer = sharedBufferGeometryManager.getSharedBuffer('strip-' + this.materialOptions.type);
       this.sharedBuffer.restartPrimitive();
@@ -54,18 +50,18 @@ var onLoaded = require('../onloaded.js');
       this.sharedBuffer.undo(this.prevIdx);
     },
     addPoint: (function () {
-      var direction = new THREE.Vector3();
+      const direction = new THREE.Vector3();
 
       return function (position, orientation, pointerPosition, pressure, timestamp) {
-        var converter = this.materialOptions.converter;
+        const converter = this.materialOptions.converter;
 
         direction.set(1, 0, 0);
         direction.applyQuaternion(orientation);
         direction.normalize();
 
-        var posA = pointerPosition.clone();
-        var posB = pointerPosition.clone();
-        var brushSize = this.data.size * pressure;
+        const posA = pointerPosition.clone();
+        const posB = pointerPosition.clone();
+        const brushSize = this.data.size * pressure;
         posA.add(direction.clone().multiplyScalar(brushSize / 2));
         posB.add(direction.clone().multiplyScalar(-brushSize / 2));
 
@@ -94,9 +90,9 @@ var onLoaded = require('../onloaded.js');
 
         if (this.materialOptions.type === 'textured') {
           this.sharedBuffer.idx.uv += 2;
-          var uvs = this.sharedBuffer.current.attributes.uv.array;
-          var u, offset;
-          for (var i = 0; i < this.data.numPoints + 1; i++) {
+          const uvs = this.sharedBuffer.current.attributes.uv.array;
+          let u, offset;
+          for (let i = 0; i < this.data.numPoints + 1; i++) {
             u = i / this.data.numPoints;
             offset = 4 * i;
             if (this.prevIdx.uv !== 0) {
@@ -120,23 +116,24 @@ var onLoaded = require('../onloaded.js');
     })(),
 
     computeVertexNormals: (function () {
-      var pA = new THREE.Vector3();
-      var pB = new THREE.Vector3();
-      var pC = new THREE.Vector3();
-      var cb = new THREE.Vector3();
-      var ab = new THREE.Vector3();
+      const pA = new THREE.Vector3();
+      const pB = new THREE.Vector3();
+      const pC = new THREE.Vector3();
+      const cb = new THREE.Vector3();
+      const ab = new THREE.Vector3();
 
       return function () {
-        var start = this.prevIdx.position === 0 ? 0 : (this.prevIdx.position + 1) * 3;
-        var end = (this.idx.position) * 3;
-        var vertices = this.sharedBuffer.current.attributes.position.array;
-        var normals = this.sharedBuffer.current.attributes.normal.array;
+        const start = this.prevIdx.position === 0 ? 0 : (this.prevIdx.position + 1) * 3;
+        const end = (this.idx.position) * 3;
+        const vertices = this.sharedBuffer.current.attributes.position.array;
+        const normals = this.sharedBuffer.current.attributes.normal.array;
+        let i;
 
-        for (var i = start; i <= end; i++) {
+        for (let i = start; i <= end; i++) {
           normals[i] = 0;
         }
 
-        var pair = true;
+        let pair = true;
         for (i = start; i < end - 6; i += 3) {
           if (pair) {
             pA.fromArray(vertices, i);
@@ -196,7 +193,7 @@ var onLoaded = require('../onloaded.js');
     })()
   };
 
-  var lines = [
+  const lines = [
     {
       name: 'flat',
       materialOptions: {
@@ -309,14 +306,14 @@ var onLoaded = require('../onloaded.js');
     }
   ];
 
-  for (var i = 0; i < lines.length; i++) {
-    var definition = lines[i];
+  for (let i = 0; i < lines.length; i++) {
+    const definition = lines[i];
     if (definition.materialOptions.textureSrc) {
       definition.materialOptions.converter = window.atlas.getUVConverters(definition.materialOptions.textureSrc);
     } else {
       definition.materialOptions.converter = window.atlas.getUVConverters(null);
     }
 
-    AFRAME.registerBrush(definition.name, Object.assign({}, line, {materialOptions: definition.materialOptions}), {thumbnail: definition.thumbnail, maxPoints: 3000});
+    AFRAME.registerBrush(definition.name, Object.assign({}, line, { materialOptions: definition.materialOptions }), { thumbnail: definition.thumbnail, maxPoints: 3000 });
   }
 })();

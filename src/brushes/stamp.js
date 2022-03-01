@@ -1,33 +1,31 @@
- /* global AFRAME THREE */
-var sharedBufferGeometryManager = require('../sharedbuffergeometrymanager.js');
-var onLoaded = require('../onloaded.js');
+/* globals AFRAME THREE */
+const sharedBufferGeometryManager = require('../sharedbuffergeometrymanager.js');
+const onLoaded = require('../onloaded.js');
 
- (function () {
-
-   onLoaded(function () {
-     var shaded = new THREE.MeshStandardMaterial({
-        side: THREE.DoubleSide,
-        map: window.atlas.map,
-        vertexColors: THREE.VertexColors,
-        transparent: true,
-        alphaTest: 0.5,
-        roughness: 0.75,
-        metalness: 0.25
-      });
-    var flat = new THREE.MeshBasicMaterial({
-        side: THREE.DoubleSide,
-        map: window.atlas.map,
-        vertexColors: THREE.VertexColors,
-        transparent: true,
-        alphaTest: 0.5
+(function () {
+  onLoaded(function () {
+    const shaded = new THREE.MeshStandardMaterial({
+      side: THREE.DoubleSide,
+      map: window.atlas.map,
+      vertexColors: THREE.VertexColors,
+      transparent: true,
+      alphaTest: 0.5,
+      roughness: 0.75,
+      metalness: 0.25
+    });
+    const flat = new THREE.MeshBasicMaterial({
+      side: THREE.DoubleSide,
+      map: window.atlas.map,
+      vertexColors: THREE.VertexColors,
+      transparent: true,
+      alphaTest: 0.5
     });
 
     sharedBufferGeometryManager.addSharedBuffer('tris-flat', flat);
     sharedBufferGeometryManager.addSharedBuffer('tris-shaded', shaded);
   });
 
-  var stamp = {
-
+  const stamp = {
     init: function (color, brushSize) {
       this.sharedBuffer = sharedBufferGeometryManager.getSharedBuffer('tris-' + this.materialOptions.type);
       this.prevIdx = Object.assign({}, this.sharedBuffer.idx);
@@ -39,14 +37,14 @@ var onLoaded = require('../onloaded.js');
       this.angleJitter = 0;
       this.autoRotate = false;
 
-      if (this.materialOptions['subTextures'] !== undefined) {
-        this.subTextures = this.materialOptions['subTextures'];
+      if (this.materialOptions.subTextures !== undefined) {
+        this.subTextures = this.materialOptions.subTextures;
       }
-      if (this.materialOptions['autoRotate'] === true) {
+      if (this.materialOptions.autoRotate === true) {
         this.autoRotate = true;
       }
-      if (this.materialOptions['angleJitter'] !== undefined) {
-        this.angleJitter = this.materialOptions['angleJitter'];
+      if (this.materialOptions.angleJitter !== undefined) {
+        this.angleJitter = this.materialOptions.angleJitter;
         this.angleJitter = this.angleJitter * 2 - this.angleJitter;
       }
     },
@@ -60,14 +58,14 @@ var onLoaded = require('../onloaded.js');
     },
 
     addPoint: (function () {
-      var axis = new THREE.Vector3();
-      var dir = new THREE.Vector3();
-      var a = new THREE.Vector3();
-      var b = new THREE.Vector3();
-      var c = new THREE.Vector3();
-      var d = new THREE.Vector3();
-      var auxDir = new THREE.Vector3();
-      var pi2 = Math.PI / 2;
+      const axis = new THREE.Vector3();
+      const dir = new THREE.Vector3();
+      const a = new THREE.Vector3();
+      const b = new THREE.Vector3();
+      const c = new THREE.Vector3();
+      const d = new THREE.Vector3();
+      const auxDir = new THREE.Vector3();
+      const pi2 = Math.PI / 2;
 
       return function (position, rotation, pointerPosition, pressure, timestamp) {
         // brush side
@@ -80,8 +78,8 @@ var onLoaded = require('../onloaded.js');
         axis.applyQuaternion(rotation);
         axis.normalize();
 
-        var brushSize = this.data.size * pressure / 2;
-        var brushAngle = Math.PI / 4 + Math.random() * this.angleJitter;
+        const brushSize = this.data.size * pressure / 2;
+        let brushAngle = Math.PI / 4 + Math.random() * this.angleJitter;
 
         if (this.autoRotate) {
           this.currAngle += 0.1;
@@ -92,9 +90,6 @@ var onLoaded = require('../onloaded.js');
         b.copy(pointerPosition).add(auxDir.copy(dir.applyAxisAngle(axis, pi2)).multiplyScalar(brushSize));
         c.copy(pointerPosition).add(auxDir.copy(dir.applyAxisAngle(axis, pi2)).multiplyScalar(brushSize));
         d.copy(pointerPosition).add(dir.applyAxisAngle(axis, pi2).multiplyScalar(brushSize));
-
-        var nidx = this.idx.position;
-        var cidx = this.idx.position;
 
         // triangle 1
         this.sharedBuffer.addVertex(a.x, a.y, a.z);
@@ -107,24 +102,24 @@ var onLoaded = require('../onloaded.js');
         this.sharedBuffer.addVertex(a.x, a.y, a.z);
 
         // normals & color
-        for (var i = 0; i < 6; i++) {
+        for (let i = 0; i < 6; i++) {
           this.sharedBuffer.addNormal(axis.x, axis.y, axis.z);
           this.sharedBuffer.addColor(this.data.color.r, this.data.color.g, this.data.color.b);
         }
 
         // UVs
-        var uv = this.data.numPoints * 6 * 2;
+        // var uv = this.data.numPoints * 6 * 2;
 
         // subTextures?
-        var Umin = 0;
-        var Umax = 1;
+        let Umin = 0;
+        let Umax = 1;
         if (this.subTextures > 1) {
-          var subt = Math.floor(Math.random() * this.subTextures);
+          const subt = Math.floor(Math.random() * this.subTextures);
           Umin = 1.0 / this.subTextures * subt;
           Umax = Umin + 1.0 / this.subTextures;
         }
 
-        var converter = this.materialOptions.converter;
+        const converter = this.materialOptions.converter;
 
         // triangle 1 uv
         this.sharedBuffer.addUV(converter.convertU(Umin), converter.convertV(1));
@@ -141,12 +136,11 @@ var onLoaded = require('../onloaded.js');
         this.sharedBuffer.update();
 
         return true;
-      }
+      };
     })()
-
   };
 
-  var stamps = [
+  const stamps = [
     {
       name: 'dots',
       materialOptions: {
@@ -330,15 +324,14 @@ var onLoaded = require('../onloaded.js');
     }
   ];
 
-  // var textureLoader = new THREE.TextureLoader();
-  for (var i = 0; i < stamps.length; i++) {
-    var definition = stamps[i];
+  for (let i = 0; i < stamps.length; i++) {
+    const definition = stamps[i];
     if (definition.materialOptions.textureSrc) {
-      definition.materialOptions.map = window.atlas.map; //textureLoader.load(definition.materialOptions.textureSrc);
+      definition.materialOptions.map = window.atlas.map;
       definition.materialOptions.converter = window.atlas.getUVConverters(definition.materialOptions.textureSrc);
       delete definition.materialOptions.textureSrc;
     }
-    AFRAME.registerBrush(definition.name, Object.assign({}, stamp, {materialOptions: definition.materialOptions}), {thumbnail: definition.thumbnail, spacing: definition.spacing, maxPoints: 3000});
+    AFRAME.registerBrush(definition.name, Object.assign({}, stamp, { materialOptions: definition.materialOptions }), { thumbnail: definition.thumbnail, spacing: definition.spacing, maxPoints: 3000 });
   }
 
   /*

@@ -11,8 +11,8 @@ Atlas.prototype = {
       filename = filename.replace('brushes/', '');
       return {
         convertU: function (u) {
-          var totalSize = AtlasJSON.meta.size;
-          var data = AtlasJSON.frames[filename];
+          const totalSize = AtlasJSON.meta.size;
+          const data = AtlasJSON.frames[filename];
           if (u > 1 || u < 0) {
             u = 0;
           }
@@ -20,8 +20,8 @@ Atlas.prototype = {
         },
 
         convertV: function (v) {
-          var totalSize = AtlasJSON.meta.size;
-          var data = AtlasJSON.frames[filename];
+          const totalSize = AtlasJSON.meta.size;
+          const data = AtlasJSON.frames[filename];
           if (v > 1 || v < 0) {
             v = 0;
           }

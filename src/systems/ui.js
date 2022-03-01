@@ -5,11 +5,11 @@ AFRAME.registerSystem('ui', {
   },
 
   initTextures: function () {
-    var self = this;
-    var hoverTextureUrl = 'assets/images/ui-hover.png';
-    var pressedTextureUrl = 'assets/images/ui-pressed.png';
-    this.sceneEl.systems.material.loadTexture(hoverTextureUrl, {src: hoverTextureUrl}, onLoadedHoverTexture);
-    this.sceneEl.systems.material.loadTexture(pressedTextureUrl, {src: pressedTextureUrl}, onLoadedPressedTexture);
+    const self = this;
+    const hoverTextureUrl = 'assets/images/ui-hover.png';
+    const pressedTextureUrl = 'assets/images/ui-pressed.png';
+    this.sceneEl.systems.material.loadTexture(hoverTextureUrl, { src: hoverTextureUrl }, onLoadedHoverTexture);
+    this.sceneEl.systems.material.loadTexture(pressedTextureUrl, { src: pressedTextureUrl }, onLoadedPressedTexture);
     function onLoadedHoverTexture (texture) {
       self.hoverTexture = texture;
     }
@@ -19,9 +19,8 @@ AFRAME.registerSystem('ui', {
   },
 
   closeAll: function () {
-    var els = document.querySelectorAll('[ui]');
-    var i;
-    for (i = 0; i < els.length; i++) {
+    const els = document.querySelectorAll('[ui]');
+    for (let i = 0; i < els.length; i++) {
       els[i].components.ui.close();
     }
   }

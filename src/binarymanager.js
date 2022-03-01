@@ -23,9 +23,9 @@ window.BinaryManager.prototype = {
     );
   },
   readString: function () {
-    var length = this.dataview.getUint8(this.offset++, true);
-    var output = '';
-    for (var i = 0; i < length; i++) {
+    const length = this.dataview.getUint8(this.offset++, true);
+    let output = '';
+    for (let i = 0; i < length; i++) {
       output += String.fromCharCode(this.dataview.getUint8(this.offset++, true));
     }
     return output;
@@ -38,22 +38,22 @@ window.BinaryManager.prototype = {
     );
   },
   readFloat: function () {
-    var output = this.dataview.getFloat32(this.offset, true);
+    const output = this.dataview.getFloat32(this.offset, true);
     this.offset += 4;
     return output;
   },
   readUint32: function () {
-    var output = this.dataview.getUint32(this.offset, true);
+    const output = this.dataview.getUint32(this.offset, true);
     this.offset += 4;
     return output;
   },
   readUint16: function () {
-    var output = this.dataview.getUint16(this.offset, true);
+    const output = this.dataview.getUint16(this.offset, true);
     this.offset += 2;
     return output;
   },
   readUint8: function () {
-    var output = this.dataview.getUint8(this.offset, true);
+    const output = this.dataview.getUint8(this.offset, true);
     this.offset++;
     return output;
   },
@@ -66,13 +66,13 @@ window.BinaryManager.prototype = {
   },
   writeString: function (value) {
     this.writeUint8(value.length);
-    for (var i = 0; i < value.length; i++) {
+    for (let i = 0; i < value.length; i++) {
       this.writeUint8(value.charCodeAt(i));
     }
   },
   writeUint8: function (value) {
     this.dataview.setUint8(this.offset, value, this.isLittleEndian);
-    this.offset ++;
+    this.offset++;
   },
   writeUint16: function (value) {
     this.dataview.setUint16(this.offset, value, this.isLittleEndian);
@@ -87,7 +87,7 @@ window.BinaryManager.prototype = {
     this.offset += 4;
   },
   writeFloat32Array: function (value) {
-    for (var i = 0; i < value.length; i++) {
+    for (let i = 0; i < value.length; i++) {
       this.writeFloat32(value[i]);
     }
   },

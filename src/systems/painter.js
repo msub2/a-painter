@@ -1,10 +1,10 @@
-/* global AFRAME Blob uploadcare */
+/* global AFRAME Blob FormData fetch */
 
-var saveAs = require('../../vendor/saveas.js').saveAs;
+const saveAs = require('../../vendor/saveas.js').saveAs;
 
 AFRAME.registerSystem('painter', {
   init: function () {
-    var mappings = {
+    const mappings = {
       behaviours: {},
       mappings: {
         painting: {
@@ -14,7 +14,7 @@ AFRAME.registerSystem('painter', {
           },
 
           'vive-controls': {
-            'axismove': 'changeBrushSizeInc',
+            axismove: 'changeBrushSizeInc',
             'trackpad.touchstart': 'startChangeBrushSize',
             'menu.down': 'toggleMenu',
 
@@ -24,7 +24,7 @@ AFRAME.registerSystem('painter', {
           },
 
           'oculus-touch-controls': {
-            'axismove': 'changeBrushSizeAbs',
+            axismove: 'changeBrushSizeAbs',
             'abutton.down': 'toggleMenu',
             'xbutton.down': 'toggleMenu',
 
@@ -37,18 +37,18 @@ AFRAME.registerSystem('painter', {
           },
 
           'windows-motion-controls': {
-            'axismove': 'changeBrushSizeAbs',
+            axismove: 'changeBrushSizeAbs',
             'menu.down': 'toggleMenu',
 
             // Teleport
             'trackpad.down': 'aim',
             'trackpad.up': 'teleport'
-          },
+          }
         }
       }
     };
 
-    this.sceneEl.addEventListener('loaded', function() {
+    this.sceneEl.addEventListener('loaded', function () {
       AFRAME.registerInputMappings(mappings);
       AFRAME.currentInputMapping = 'painting';
     });
@@ -58,12 +58,12 @@ AFRAME.registerSystem('painter', {
     this.showTemplateItems = true;
 
     function getUrlParams () {
-      var match;
-      var pl = /\+/g;  // Regex for replacing addition symbol with a space
-      var search = /([^&=]+)=?([^&]*)/g;
-      var decode = function (s) { return decodeURIComponent(s.replace(pl, ' ')); };
-      var query = window.location.search.substring(1);
-      var urlParams = {};
+      let match;
+      const pl = /\+/g; // Regex for replacing addition symbol with a space
+      const search = /([^&=]+)=?([^&]*)/g;
+      const decode = function (s) { return decodeURIComponent(s.replace(pl, ' ')); };
+      const query = window.location.search.substring(1);
+      const urlParams = {};
 
       match = search.exec(query);
       while (match) {
@@ -72,15 +72,15 @@ AFRAME.registerSystem('painter', {
       }
       return urlParams;
     }
-    var urlParams = getUrlParams();
+    const urlParams = getUrlParams();
     if (urlParams.url || urlParams.urljson) {
-      var isBinary = urlParams.urljson === undefined;
+      const isBinary = urlParams.urljson === undefined;
       this.brushSystem.loadFromUrl(urlParams.url || urlParams.urljson, isBinary);
       document.addEventListener('DOMContentLoaded', e => {
         document.getElementById('logo').setAttribute('visible', false);
         document.getElementById('acamera').setAttribute('position', '0 1.6 0');
         document.getElementById('apainter-logo').classList.remove('hidden');
-        //document.getElementById('apainter-author').classList.remove('hidden'); // not used yet
+        // document.getElementById('apainter-author').classList.remove('hidden'); // not used yet
       });
     }
 
@@ -109,12 +109,12 @@ AFRAME.registerSystem('painter', {
     this.logoFade = null;
     this.logoFading = false;
     this.time = 0;
-    var self = this;
+    const self = this;
     document.addEventListener('stroke-started', function (event) {
       if (!self.logoFading) {
-        var logo = document.getElementById('logo');
-        var mesh = logo.getObject3D('mesh');
-        var animObject = { alpha: 1.0 };
+        const logo = document.getElementById('logo');
+        const mesh = logo.getObject3D('mesh');
+        const animObject = { alpha: 1.0 };
         self.logoFade = AFRAME.ANIME({
           targets: animObject,
           alpha: 0,
@@ -134,7 +134,7 @@ AFRAME.registerSystem('painter', {
 
     // @fixme This is just for debug until we'll get some UI
     document.addEventListener('keyup', function (event) {
-      if(event.shiftKey || event.ctrlKey) return;
+      if (event.shiftKey || event.ctrlKey) return;
       if (event.keyCode === 8) {
         // Undo (Backspace)
         self.brushSystem.undo();
@@ -143,16 +143,16 @@ AFRAME.registerSystem('painter', {
         // Clear (c)
         self.brushSystem.clear();
       }
-      if (event.keyCode === 71) {
+      if (event.keyCode === 71) {
         // Export to GTF (g)
-        var drawing = document.querySelector('.a-drawing');
+        const drawing = document.querySelector('.a-drawing');
         self.sceneEl.systems['gltf-exporter'].export(drawing);
       }
       if (event.keyCode === 78) {
         // Next brush (n)
-        var hands = document.querySelectorAll('[paint-controls]');
-        var brushesNames = Object.keys(AFRAME.BRUSHES);
-        var index = brushesNames.indexOf(hands[0].components.brush.data.brush);
+        const hands = document.querySelectorAll('[paint-controls]');
+        const brushesNames = Object.keys(AFRAME.BRUSHES);
+        let index = brushesNames.indexOf(hands[0].components.brush.data.brush);
         index = (index + 1) % brushesNames.length;
         [].forEach.call(hands, function (hand) {
           hand.setAttribute('brush', 'brush', brushesNames[index]);
@@ -183,9 +183,9 @@ AFRAME.registerSystem('painter', {
       }
       if (event.keyCode === 79) { // o - toggle template objects+images visibility
         self.showTemplateItems = !self.showTemplateItems;
-        var templateItems = document.querySelectorAll('.templateitem');
-        for (var i = 0; i < templateItems.length; i++) {
-            templateItems[i].setAttribute('visible', self.showTemplateItems);
+        const templateItems = document.querySelectorAll('.templateitem');
+        for (let i = 0; i < templateItems.length; i++) {
+          templateItems[i].setAttribute('visible', self.showTemplateItems);
         }
       }
       if (event.keyCode === 88) { // x remove 2nd
@@ -195,36 +195,36 @@ AFRAME.registerSystem('painter', {
 
     console.info('A-PAINTER Version: ' + this.version);
   },
-  tick: function(t, dt) {
+  tick: function (t, dt) {
     if (this.logoFading) {
       this.time += dt;
       this.logoFade.tick(this.time);
     }
   },
   saveJSON: function () {
-    var json = this.brushSystem.getJSON();
-    var blob = new Blob([JSON.stringify(json)], {type: 'application/json'});
+    const json = this.brushSystem.getJSON();
+    const blob = new Blob([JSON.stringify(json)], { type: 'application/json' });
     saveAs(blob, 'demo.json');
   },
   save: function () {
-    var dataviews = this.brushSystem.getBinary();
-    var blob = new Blob(dataviews, {type: 'application/octet-binary'});
+    const dataviews = this.brushSystem.getBinary();
+    const blob = new Blob(dataviews, { type: 'application/octet-binary' });
     saveAs(blob, 'demo.apa');
   },
   upload: function () {
     this.sceneEl.emit('drawing-upload-started');
-    var self = this;
+    const self = this;
 
-    var baseUrl = 'https://aframe.io/a-painter/?url=';
+    const baseUrl = 'https://aframe.io/a-painter/?url=';
 
-    var dataviews = this.brushSystem.getBinary();
-    var blob = new Blob(dataviews, {type: 'application/octet-binary'});
+    const dataviews = this.brushSystem.getBinary();
+    const blob = new Blob(dataviews, { type: 'application/octet-binary' });
 
     const cloudName = 'a-painter';
     const unsignedUploadPreset = 'upload_painting';
     const url = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
     const fd = new FormData();
-    
+
     fd.append('upload_preset', unsignedUploadPreset);
     fd.append('file', blob);
     fetch(url, { method: 'POST', body: fd }).then(res => {
@@ -238,6 +238,6 @@ AFRAME.registerSystem('painter', {
     }).catch(err => {
       console.error(err);
       self.sceneEl.emit('drawing-upload-error', { errorInfo: err });
-    })
+    });
   }
 });

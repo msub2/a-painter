@@ -1,4 +1,4 @@
-var SharedBufferGeometry = require('./sharedbuffergeometry.js');
+const SharedBufferGeometry = require('./sharedbuffergeometry.js');
 
 function SharedBufferGeometryManager () {
   this.sharedBuffers = {};
@@ -6,7 +6,7 @@ function SharedBufferGeometryManager () {
 
 SharedBufferGeometryManager.prototype = {
   addSharedBuffer: function (name, material) {
-    var bufferGeometry = new SharedBufferGeometry(material);
+    const bufferGeometry = new SharedBufferGeometry(material);
     this.sharedBuffers[name] = bufferGeometry;
   },
 

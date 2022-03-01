@@ -1,3 +1,5 @@
+/* global THREE */
+
 function SharedBufferGeometry (material) {
   this.material = material;
 
@@ -13,8 +15,8 @@ SharedBufferGeometry.prototype = {
     if (this.idx.position >= this.current.attributes.position.count) {
       this.addBuffer(false);
     } else if (this.idx.position !== 0) {
-      var prev = (this.idx.position - 1) * 3;
-      var position = this.current.attributes.position.array;
+      let prev = (this.idx.position - 1) * 3;
+      const position = this.current.attributes.position.array;
       this.addVertex(position[prev++], position[prev++], position[prev++]);
 
       this.idx.color++;
@@ -24,23 +26,23 @@ SharedBufferGeometry.prototype = {
   },
 
   remove: function (prevIdx, idx) {
-    var pos = this.current.attributes.position.array;
+    // var pos = this.current.attributes.position.array; // Is this used???
 
     // Loop through all the attributes: position, color, uv, normal,...
     if (this.idx.position > idx.position) {
-      for (key in this.idx) {
-        var componentSize = key === 'uv' ? 2 : 3;
-        var pos = (prevIdx[key]) * componentSize;
-        var start = (idx[key] + 1) * componentSize;
-        var end = this.idx[key] * componentSize;
-        for (var i = start; i < end; i++) {
+      for (const key in this.idx) {
+        const componentSize = key === 'uv' ? 2 : 3;
+        let pos = (prevIdx[key]) * componentSize;
+        const start = (idx[key] + 1) * componentSize;
+        const end = this.idx[key] * componentSize;
+        for (let i = start; i < end; i++) {
           this.current.attributes[key].array[pos++] = this.current.attributes[key].array[i];
         }
       }
     }
 
-    for (key in this.idx) {
-      var diff = (idx[key] - prevIdx[key]);
+    for (const key in this.idx) {
+      const diff = (idx[key] - prevIdx[key]);
       this.idx[key] -= diff;
     }
 
@@ -57,24 +59,24 @@ SharedBufferGeometry.prototype = {
   },
 
   addBuffer: function (copyLast) {
-    var geometry = new THREE.BufferGeometry();
+    const geometry = new THREE.BufferGeometry();
 
-    var vertices = new Float32Array(this.maxBufferSize * 3);
-    var indices = new Uint32Array(this.maxBufferSize * 4.5);
-    var normals = new Float32Array(this.maxBufferSize * 3);
-    var uvs = new Float32Array(this.maxBufferSize * 2);
-    var colors = new Float32Array(this.maxBufferSize * 3);
+    const vertices = new Float32Array(this.maxBufferSize * 3);
+    const indices = new Uint32Array(this.maxBufferSize * 4.5);
+    const normals = new Float32Array(this.maxBufferSize * 3);
+    const uvs = new Float32Array(this.maxBufferSize * 2);
+    const colors = new Float32Array(this.maxBufferSize * 3);
 
-    var mesh = new THREE.Mesh(geometry, this.material);
+    const mesh = new THREE.Mesh(geometry, this.material);
 
     mesh.frustumCulled = false;
     mesh.vertices = vertices;
 
     this.object3D = new THREE.Object3D();
-    var drawing = document.querySelector('.a-drawing');
+    let drawing = document.querySelector('.a-drawing');
     if (!drawing) {
       drawing = document.createElement('a-entity');
-      drawing.className = "a-drawing";
+      drawing.className = 'a-drawing';
       document.querySelector('a-scene').appendChild(drawing);
     }
     drawing.object3D.add(this.object3D);
@@ -87,7 +89,6 @@ SharedBufferGeometry.prototype = {
     geometry.setAttribute('uv', new THREE.BufferAttribute(uvs, 2).setUsage(THREE.DynamicDrawUsage));
     geometry.setAttribute('normal', new THREE.BufferAttribute(normals, 3).setUsage(THREE.DynamicDrawUsage));
     geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3).setUsage(THREE.DynamicDrawUsage));
-
 
     this.previous = null;
     if (this.geometries.length > 0) {
@@ -105,25 +106,24 @@ SharedBufferGeometry.prototype = {
     this.current = geometry;
 
     if (this.previous && copyLast) {
-      var prev = (this.maxBufferSize - 2) * 3;
-      var col = (this.maxBufferSize - 2) * 3;
-      var uv = (this.maxBufferSize - 2) * 2;
-      var norm = (this.maxBufferSize - 2) * 3;
+      let prev = (this.maxBufferSize - 2) * 3;
+      let col = (this.maxBufferSize - 2) * 3;
+      // let uv = (this.maxBufferSize - 2) * 2;
+      let norm = (this.maxBufferSize - 2) * 3;
 
-      var position = this.previous.attributes.position.array;
+      const position = this.previous.attributes.position.array;
       this.addVertex(position[prev++], position[prev++], position[prev++]);
       this.addVertex(position[prev++], position[prev++], position[prev++]);
 
-      var normal = this.previous.attributes.normal.array;
+      const normal = this.previous.attributes.normal.array;
       this.addNormal(normal[norm++], normal[norm++], normal[norm++]);
       this.addNormal(normal[norm++], normal[norm++], normal[norm++]);
 
-      var color = this.previous.attributes.color.array;
+      const color = this.previous.attributes.color.array;
       this.addColor(color[col++], color[col++], color[col++]);
       this.addColor(color[col++], color[col++], color[col++]);
 
-      var uvs = this.previous.attributes.uv.array;
-
+      //  const uvs = this.previous.attributes.uv.array;
     }
   },
 
@@ -136,14 +136,14 @@ SharedBufferGeometry.prototype = {
   },
 
   addVertex: function (x, y, z) {
-    var buffer = this.current.attributes.position;
+    let buffer = this.current.attributes.position;
     if (this.idx.position === buffer.count) {
       this.addBuffer(true);
       buffer = this.current.attributes.position;
     }
     buffer.setXYZ(this.idx.position++, x, y, z);
     if (this.strip) {
-      if ((this.idx.position + 1) % 2 == 0 && this.idx.position > 1) {
+      if ((this.idx.position + 1) % 2 === 0 && this.idx.position > 1) {
         /* Line brushes
           2---3
           | \ |
@@ -153,9 +153,8 @@ SharedBufferGeometry.prototype = {
         this.current.index.setXYZ(this.idx.position - 3, this.idx.position - 3, this.idx.position - 2, this.idx.position - 1);
         this.current.index.setXYZ(this.idx.position - 2, this.idx.position - 1, this.idx.position - 2, this.idx.position);
       }
-    }
-    else {
-      if ((this.idx.position + 1) % 3 == 0) {
+    } else {
+      if ((this.idx.position + 1) % 3 === 0) {
         /* Stamp brushes
           0---1  0
             \ |  | \

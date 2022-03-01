@@ -18,10 +18,10 @@ AFRAME.registerBrush('spheres',
     // It should returns true if the point is added correctly, false otherwise.
     addPoint: function (position, orientation, pointerPosition, pressure, timestamp) {
       // Create a new sphere mesh to insert at the given position
-      var sphere = new THREE.Mesh(this.geometry, this.material);
+      const sphere = new THREE.Mesh(this.geometry, this.material);
 
       // The scale is determined by the trigger preassure
-      var sca = this.data.size / 2 * pressure;
+      const sca = this.data.size / 2 * pressure;
       sphere.scale.set(sca, sca, sca);
       sphere.initialScale = sphere.scale.clone();
 
@@ -40,11 +40,11 @@ AFRAME.registerBrush('spheres',
     },
     // This function is called on every frame
     tick: function (time, delta) {
-      for (var i = 0; i < this.object3D.children.length; i++) {
-        var sphere = this.object3D.children[i];
+      for (let i = 0; i < this.object3D.children.length; i++) {
+        const sphere = this.object3D.children[i];
         // Calculate the sine value based on the time and the phase for this sphere
         // and use it to scale the geometry
-        var sin = (Math.sin(sphere.phase + time / 500.0) + 1) / 2 + 0.1;
+        const sin = (Math.sin(sphere.phase + time / 500.0) + 1) / 2 + 0.1;
         sphere.scale.copy(sphere.initialScale).multiplyScalar(sin);
       }
     },
@@ -53,5 +53,5 @@ AFRAME.registerBrush('spheres',
     }
   },
   // Define extra options for this brush
-  {thumbnail: 'brushes/thumb_spheres.gif', spacing: 0.01}
+  { thumbnail: 'brushes/thumb_spheres.gif', spacing: 0.01 }
 );

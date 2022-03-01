@@ -19,10 +19,10 @@ AFRAME.registerBrush('single-sphere',
     addPoint: function (position, orientation, pointerPosition, pressure, timestamp) {
       if (!this.firstPoint) {
         this.firstPoint = pointerPosition.clone();
-        this.mesh.position.set(this.firstPoint.x, this.firstPoint.y, this.firstPoint.z)
+        this.mesh.position.set(this.firstPoint.x, this.firstPoint.y, this.firstPoint.z);
       }
-      this.mesh.visible = true
-      var distance = this.firstPoint.distanceTo(pointerPosition);
+      this.mesh.visible = true;
+      const distance = this.firstPoint.distanceTo(pointerPosition);
       this.mesh.scale.set(distance, distance, distance);
       return true;
     },
@@ -30,5 +30,5 @@ AFRAME.registerBrush('single-sphere',
       this.drawing.object3D.children.pop();
     }
   },
-  {thumbnail: 'brushes/thumb_single_sphere.png', spacing: 0.0}
+  { thumbnail: 'brushes/thumb_single_sphere.png', spacing: 0.0 }
 );
