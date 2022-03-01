@@ -4,7 +4,6 @@ var saveAs = require('../../vendor/saveas.js').saveAs;
 
 AFRAME.registerSystem('painter', {
   init: function () {
-
     var mappings = {
       behaviours: {},
       mappings: {
